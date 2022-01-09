@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
    View,
    Text,
@@ -19,7 +19,7 @@ export function Home() {
 
    const [newSkill, setNewSkill] = useState('');
    const [mySkills, setMySkills] = useState<SkillData[]>([]);
-   const [grettng, setGretting] = useState('');
+   const [greeting, setGreeting] = useState('');
 
    function handleAddNewSkill() {
       const data = {
@@ -29,11 +29,41 @@ export function Home() {
       setMySkills(oldState => [...oldState, data]);
    }
 
+
+
+
+   function handleRemoveSkill(id: string) {
+      setMySkills(oldState => oldState.filter(
+         skill => skill.id !== id
+      ));
+   }
+
+
+
+
+
+   useEffect(() => {
+      const currentHour = new Date().getHours();
+
+      if (currentHour < 12) {
+         setGreeting('Good Morning');
+      }
+      else if (currentHour >= 12 && currentHour < 18) {
+         setGreeting('Good Afternoon');
+      } else {
+         setGreeting('Good Night');
+      }
+   }, [])
+
    return (
       <View style={styles.container}>
 
          <Text style={styles.title}>
             Welcome, JAQUELINE
+         </Text>
+
+         <Text style={styles.greetings}>
+            { greeting }
          </Text>
 
          <TextInput
@@ -56,7 +86,10 @@ export function Home() {
             data={mySkills}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-               <SkillCard skill={item.name} />
+               <SkillCard
+                  skill={item.name}
+                  onPress={() => handleRemoveSkill(item.id)}
+               />
             )}
          />
 
@@ -85,5 +118,9 @@ const styles = StyleSheet.create({
       padding: Platform.OS === 'ios' ? 15 : 10,
       marginTop: 30,
       borderRadius: 7
+   },
+
+   greetings: {
+      color: '#FFF'
    }
 })
